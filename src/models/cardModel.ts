@@ -2,7 +2,7 @@ import mongoose, { ObjectId, Schema } from "mongoose";
 import { Document } from "mongoose";
 import { IProduct } from "./productModel";
 const CartStatusEnum=['active','completed']
-export interface IcartItem extends Document{
+export interface IcartItem  {
     product:IProduct;
     unitPrice:number;
     quantity:number;
