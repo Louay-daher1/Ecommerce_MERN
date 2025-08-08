@@ -19,6 +19,17 @@ export const GetActiveCartForUser =async ({userId}:GetActiveCartForUser)=>{
     }
     return cart;
 }
+interface ClearCart{
+    userId:string;
+}
+export const clearCart=async({userId}:ClearCart)=>{
+    const cart= await GetActiveCartForUser({userId});
+    cart.items=[];
+    cart.totalAmount=0;
+    const updatedCart=await cart.save();
+    return{data:updatedCart,statusCode:200}
+
+}
 interface AddItemToCart{
 productId:any;
 quantity:number;
@@ -73,5 +84,24 @@ export const updateItemInCart=async ({productId,quantity,userId}:updateItemToCar
     cart.totalAmount=total;
     const updatedCart=await cart.save();
     return{data:updatedCart,statusCode:200}
-
+}
+interface DeleteItemInCart{
+    productId:any;
+    userId:string;
+}
+export const deleteItemInCart=async({productId,userId}:DeleteItemInCart)=>{
+    const cart= await GetActiveCartForUser({userId})
+ const existsIncart=cart.items.find((p)=>p.product.toString()===productId);
+    if(!existsIncart){
+        return {data:"Item does not exist in cart",statusCode:200};
+    }
+    const othercarttotalItems=cart.items.filter((p)=>p.product.toString()!==productId);
+    const total=othercarttotalItems.reduce((sum,product)=>{
+        sum+=product.quantity*product.unitPrice;
+        return sum;
+    },0)
+    cart.items=othercarttotalItems;
+    cart.totalAmount=total;
+        const updatedCart=await cart.save();
+    return{data:updatedCart,statusCode:200}
 }
